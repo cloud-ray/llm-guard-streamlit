@@ -79,17 +79,18 @@ if "app_key" in st.session_state:
                 for chunk in chat.send_message(prompt, stream=True):
                     word_count = 0
                     random_int = random.randint(5,10)
-                    for word in chunk.text:
-                        full_response+=word
-                        word_count+=1
-                        if word_count == random_int:
-                            time.sleep(0.05)
-                            message_placeholder.markdown(full_response + "_")
-                            word_count = 0
-                            random_int = random.randint(5,10)
+                    for part in chunk.parts:
+                        if part.WhichOneof("content") == "text":
+                            for word in part.text.words:
+                                full_response += word
+                                word_count += 1
+                                if word_count == random_int:
+                                    time.sleep(0.05)
+                                    message_placeholder.markdown(full_response + "_")
+                                    word_count = 0
+                                    random_int = random.randint(5,10)
                 message_placeholder.markdown(full_response)
             except genai.types.generation_types.BlockedPromptException as e:
                 st.exception(e)
             except Exception as e:
                 st.exception(e)
-            st.session_state.history = chat.history
