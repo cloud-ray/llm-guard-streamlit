@@ -60,7 +60,6 @@ for message in chat.history:
         st.markdown(message.parts[0].text)
 
 
-
 if "app_key" in st.session_state:
     if prompt := st.chat_input("Ask me anything..."):
         sanitized_prompt, results_valid, results_score = scan_prompt(input_scanners, prompt, fail_fast=True)
@@ -80,7 +79,7 @@ if "app_key" in st.session_state:
                     word_count = 0
                     random_int = random.randint(5,10)
                     for part in chunk.parts:
-                        if part.WhichOneof("content") == "text":
+                        if hasattr(part, "text"):
                             for word in part.text.words:
                                 full_response += word
                                 word_count += 1
@@ -90,7 +89,5 @@ if "app_key" in st.session_state:
                                     word_count = 0
                                     random_int = random.randint(5,10)
                 message_placeholder.markdown(full_response)
-            except genai.types.generation_types.BlockedPromptException as e:
-                st.exception(e)
-            except Exception as e:
-                st.exception(e)
+            except Exception as e:  # Catch all exceptions here
+                st.error(f"An error occurred: {e}")
