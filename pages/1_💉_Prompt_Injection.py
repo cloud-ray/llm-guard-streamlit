@@ -80,7 +80,7 @@ if "app_key" in st.session_state:
                     random_int = random.randint(5,10)
                     for part in chunk.parts:
                         if hasattr(part, "text"):
-                            for word in part.text.words:
+                            for word in part.text.split():
                                 full_response += word
                                 word_count += 1
                                 if word_count == random_int:
