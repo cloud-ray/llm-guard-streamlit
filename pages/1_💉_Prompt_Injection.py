@@ -81,13 +81,13 @@ if "app_key" in st.session_state:
                     for part in chunk.parts:
                         if hasattr(part, "text"):
                             for word in part.text.split():
-                                full_response += word
+                                full_response += word + " "
                                 word_count += 1
                                 if word_count == random_int:
                                     time.sleep(0.05)
                                     message_placeholder.markdown(full_response + "_")
                                     word_count = 0
                                     random_int = random.randint(5,10)
-                message_placeholder.markdown(full_response)
+                message_placeholder.markdown(full_response.strip())
             except Exception as e:  # Catch all exceptions here
                 st.error(f"An error occurred: {e}")
