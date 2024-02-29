@@ -17,7 +17,9 @@ st.markdown(
     ### Want to learn more?
     - Check out [LLM Guard](https://llm-guard.com/)
     - Dive into their [GitHub](https://github.com/protectai/llm-guard)
-    ### Let's work together!
+    ### Let's work together.
     - Connect and send me a message on [LinkedIn](https://www.linkedin.com/in/raymond-fuorry/)
+    ### Bugs?
+    - Send me a message or submit an issue on [GitHub](https://github.com/cloud-ray/llm-guard-streamlit)
 """
 )
