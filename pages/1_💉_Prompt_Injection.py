@@ -60,37 +60,39 @@ for message in chat.history:
         st.markdown(message.parts[0].text)
 
 
-
 if "app_key" in st.session_state:
-    if prompt := st.chat_input("Ask me anything..."):
-        sanitized_prompt, results_valid, results_score = scan_prompt(input_scanners, prompt, fail_fast=True)
+    if prompt := st.chat_input(""):
+        prompt = prompt.replace('\n', ' \n')
+
+        # LLM Guard Code
+        sanitized_prompt, results_valid, results_score = scan_prompt(input_scanners, prompt)
         if any(not result for result in results_valid.values()):
             st.error(f"**Prompt is not valid:**\n{prompt}\n\nLLM Guard detected: {results_score}\n\nMessage NOT sent to the LLM.")
+
         else:
             st.success('LLM Guard detected no Prompt Injection.', icon="✅")
-            prompt = sanitized_prompt.replace('\n', ' \n')
+            prompt = sanitized_prompt
             with st.chat_message("user"):
                 st.markdown(prompt)
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
                 message_placeholder.markdown("Thinking...")
-            try:
-                full_response = ""
-                for chunk in chat.send_message(prompt, stream=True):
-                    word_count = 0
-                    random_int = random.randint(5,10)
-                    for part in chunk.parts:
-                        if part.WhichOneof("content") == "text":
-                            for word in part.text.words:
-                                full_response += word
-                                word_count += 1
-                                if word_count == random_int:
-                                    time.sleep(0.05)
-                                    message_placeholder.markdown(full_response + "_")
-                                    word_count = 0
-                                    random_int = random.randint(5,10)
-                message_placeholder.markdown(full_response)
-            except genai.types.generation_types.BlockedPromptException as e:
-                st.exception(e)
-            except Exception as e:
-                st.exception(e)
+                try:
+                    full_response = ""
+                    for chunk in chat.send_message(prompt, stream=True):
+                        word_count = 0
+                        random_int = random.randint(5,10)
+                        for word in chunk.text:
+                            full_response+=word
+                            word_count+=1
+                            if word_count == random_int:
+                                time.sleep(0.05)
+                                message_placeholder.markdown(full_response + "_")
+                                word_count = 0
+                                random_int = random.randint(5,10)
+                    message_placeholder.markdown(full_response)
+                except genai.types.generation_types.BlockedPromptException as e:
+                    st.exception(e)
+                except Exception as e:
+                    st.exception(e)
+                st.session_state.history = chat.history
